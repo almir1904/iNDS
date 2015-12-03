@@ -1,17 +1,17 @@
 iNDS
 =======
-###### Supports iOS 7 - 9.1.
+###### Supports iOS 8 - 9.1.
 
 
 iNDS is a port of the multi-platform Nintendo DS emulator to iOS.
 
-##### iNDS is a derivation of the previous Nintendo DS apps, nds4ios and Nitrogen. I meant no harm by creating this app, I really just wanted an emulator for iOS 9 for myself and decided to share. All of the work to get the emulator to run was done by the NDS4iOS team. I take no credit for that. 
-
-[Nitrogen](https://github.com/NitrogenEmulator) 
-
 Currently, emulation is powered by the DeSmuME threaded ARM interpreter and runs at nearly full speed on the iPhone 5 and above.
 
 Due to the need to mmap the entire ROM into memory, older devices with only 256MB of RAM are not supported. These devices include the iPod touch 4, iPad 1, iPhone 3GS, and anything below those devices.
+
+iNDS is a derivation of the previous Nintendo DS apps, NDS4iOS and Nitrogen. This app would not have been possible without their hard work.
+ 
+[Nitrogen](https://github.com/NitrogenEmulator) 
 
 [iNDS](http://www.williamlcobb.com/iNDS.html)
 

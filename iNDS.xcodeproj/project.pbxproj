@@ -176,6 +176,7 @@
 		CA0BA5431BFBBAA400C93357 /* iNDSRomDownloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CA0BA5421BFBBAA400C93357 /* iNDSRomDownloadManager.m */; };
 		CA4748E51C100178006F1438 /* UnrarKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CA1E52951C0FFF9B003B84A5 /* UnrarKit.framework */; };
 		CA4748E61C100178006F1438 /* UnrarKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CA1E52951C0FFF9B003B84A5 /* UnrarKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CA4748EA1C1008AF006F1438 /* iNDSEmulationProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = CA4748E91C1008AF006F1438 /* iNDSEmulationProfile.m */; };
 		CA7079C61C08F901005A1B19 /* upgrade.png in Resources */ = {isa = PBXBuildFile; fileRef = CA7079C51C08F901005A1B19 /* upgrade.png */; };
 		CA7079C91C08FA64005A1B19 /* iNDSInitialViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CA7079C81C08FA64005A1B19 /* iNDSInitialViewController.m */; };
 		CA7079CB1C08FB47005A1B19 /* AppIcon-Transparent.png in Resources */ = {isa = PBXBuildFile; fileRef = CA7079CA1C08FB47005A1B19 /* AppIcon-Transparent.png */; };
@@ -535,6 +536,8 @@
 		CA0BA5411BFBBAA400C93357 /* iNDSRomDownloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iNDSRomDownloadManager.h; sourceTree = "<group>"; };
 		CA0BA5421BFBBAA400C93357 /* iNDSRomDownloadManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iNDSRomDownloadManager.m; sourceTree = "<group>"; };
 		CA1E52951C0FFF9B003B84A5 /* UnrarKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UnrarKit.framework; path = iNDS/frameworks/UnrarKit.framework; sourceTree = "<group>"; };
+		CA4748E81C1008AF006F1438 /* iNDSEmulationProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iNDSEmulationProfile.h; sourceTree = "<group>"; };
+		CA4748E91C1008AF006F1438 /* iNDSEmulationProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iNDSEmulationProfile.m; sourceTree = "<group>"; };
 		CA6614AF1BFF7D7800AAD7D4 /* libFlurry_7.0.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libFlurry_7.0.0.a; path = ../ShoutOut/ShoutOut/Flurry/libFlurry_7.0.0.a; sourceTree = "<group>"; };
 		CA7079C51C08F901005A1B19 /* upgrade.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = upgrade.png; path = iNDS/upgrade.png; sourceTree = "<group>"; };
 		CA7079C71C08FA63005A1B19 /* iNDSInitialViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iNDSInitialViewController.h; sourceTree = "<group>"; };
@@ -769,6 +772,8 @@
 				8BEA096D17872C320060B347 /* iNDSEmulatorViewController.mm */,
 				8BEA096E17872C320060B347 /* GLProgram.h */,
 				8BEA096F17872C320060B347 /* GLProgram.m */,
+				CA4748E81C1008AF006F1438 /* iNDSEmulationProfile.h */,
+				CA4748E91C1008AF006F1438 /* iNDSEmulationProfile.m */,
 			);
 			name = "Emulator View";
 			sourceTree = "<group>";
@@ -1392,6 +1397,7 @@
 				BFCFE18317650FB0000A70CF /* armcpu.cpp in Sources */,
 				BFCFE18417650FB0000A70CF /* ArmThreadedInterpreter.cpp in Sources */,
 				BFCFE18517650FB0000A70CF /* bios.cpp in Sources */,
+				CA4748EA1C1008AF006F1438 /* iNDSEmulationProfile.m in Sources */,
 				BFCFE18617650FB0000A70CF /* cheatSystem.cpp in Sources */,
 				BFCFE18717650FB0000A70CF /* common.cpp in Sources */,
 				BFCFE18817650FB0000A70CF /* cp15.cpp in Sources */,
@@ -1600,7 +1606,7 @@
 					"$(SRCROOT)/",
 					"$(SRCROOT)/desmume/src/android",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = (
 					"-DANDROID",
@@ -1653,7 +1659,7 @@
 					"$(SRCROOT)/",
 					"$(SRCROOT)/desmume/src/android",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				OTHER_CFLAGS = (
 					"-DNS_BLOCK_ASSERTIONS=1",
 					"-DANDROID",
@@ -1702,7 +1708,7 @@
 					"$(SRCROOT)/desmume/src/android",
 				);
 				INFOPLIST_FILE = "iNDS/support/iNDS-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1752,7 +1758,7 @@
 					"$(SRCROOT)/desmume/src/android",
 				);
 				INFOPLIST_FILE = "iNDS/support/iNDS-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",

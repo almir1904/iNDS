@@ -21,6 +21,7 @@
 #include "emu.h"
 
 #import "iNDSMFIControllerSupport.h"
+#import "iNDSEmulationProfile.h"
 
 #define STRINGIZE(x) #x
 #define STRINGIZE2(x) STRINGIZE(x)
@@ -88,6 +89,8 @@ const float textureVert[] =
     CFTimeInterval lastAutosave;
     
     NSInteger speed;
+    
+    iNDSEmulationProfile *layoutProfile;
 }
 
 @property (weak, nonatomic) IBOutlet UILabel *fpsLabel;
@@ -149,6 +152,8 @@ const float textureVert[] =
     speed = 1;
     
     self.cheatsButton.layer.cornerRadius = self.speedButton.layer.cornerRadius = 2;
+    
+    layoutProfile = [[iNDSEmulationProfile alloc] init];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -216,9 +221,15 @@ const float textureVert[] =
 
 - (void)viewWillLayoutSubviews
 {
+    self.controllerContainerView.frame = self.view.bounds;
+    glkView[0].frame = layoutProfile.mainScreenRect;
+    glkView[1].frame = layoutProfile.touchScreenRect;
+}
+
+/*- (void)viewWillLayoutSubviews
+{
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     BOOL isLandscape = self.view.bounds.size.width > self.view.bounds.size.height;
-    //BOOL isWidescreen = [[UIScreen mainScreen] isWidescreen];
     
     glkView[0].frame = [self rectForScreenView:0];
     glkView[1].frame = [self rectForScreenView:1];
@@ -294,7 +305,7 @@ const float textureVert[] =
     self.cheatsButton.alpha = 0; //Until implemented
 }
 
-- (CGRect)rectForScreenView:(NSInteger)screen
+- (CGRect)defaultRectForScreenView:(NSInteger)screen
 {
     if (extWindow && screen == 0) return extWindow.bounds;
     CGRect rect = CGRectZero;
@@ -323,7 +334,7 @@ const float textureVert[] =
     }
     
     return rect;
-}
+}*/
 
 - (void)dealloc
 {
@@ -365,17 +376,20 @@ const float textureVert[] =
         extWindow = [[UIWindow alloc] initWithFrame:extScreen.bounds];
         extWindow.screen = extScreen;
         extWindow.backgroundColor = [UIColor orangeColor];
-        glkView[0] = [[GLKView alloc] initWithFrame:[self rectForScreenView:0] context:self.context];
-        glkView[1] = [[GLKView alloc] initWithFrame:[self rectForScreenView:1] context:self.context];
+        glkView[0] = [[GLKView alloc] initWithFrame:extWindow.bounds context:self.context];
+        glkView[1] = [[GLKView alloc] initWithFrame:layoutProfile.touchScreenRect context:self.context];
         glkView[0].delegate = self;
         glkView[1].delegate = self;
         [self.view insertSubview:glkView[1] atIndex:0];
         [extWindow addSubview:glkView[0]];
         [extWindow makeKeyAndVisible];
     } else {
-        glkView[0] = [[GLKView alloc] initWithFrame:[self rectForScreenView:0] context:self.context];
+        glkView[0] = [[GLKView alloc] initWithFrame:layoutProfile.mainScreenRect context:self.context];
+        glkView[1] = [[GLKView alloc] initWithFrame:layoutProfile.touchScreenRect context:self.context];
         glkView[0].delegate = self;
+        glkView[1].delegate = self;
         [self.view insertSubview:glkView[0] atIndex:0];
+        [self.view insertSubview:glkView[1] atIndex:0];
     }
     
     self.program = [[GLProgram alloc] initWithVertexShaderString:kVertShader fragmentShaderString:kFragShader];
@@ -394,29 +408,27 @@ const float textureVert[] =
     glEnableVertexAttribArray(attribTexCoord);
     
     float scale = [UIScreen mainScreen].scale;
-    CGSize size = CGSizeMake(glkView[1].bounds.size.width * scale, glkView[1].bounds.size.height * scale);
+    CGSize sizeMain = CGSizeMake(glkView[0].bounds.size.width * scale, glkView[0].bounds.size.height * scale);
+    CGSize sizeTouch = CGSizeMake(glkView[1].bounds.size.width * scale, glkView[1].bounds.size.height * scale);
     
-    glViewport(0, 0, size.width, size.height);
+    glViewport(0, 0, sizeTouch.width, sizeTouch.height);
     
     [self.program use];
     
-    glGenTextures(extWindow ? 2 : 1, texHandle);
+    glGenTextures(2, texHandle);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, texHandle[0]);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    if (extWindow) {
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texHandle[1]);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    } else {
-        texHandle[1] = 0;
-    }
+    
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, texHandle[1]);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 }
 
 - (void)shutdownGL
@@ -486,7 +498,7 @@ const float textureVert[] =
 
 - (void)startEmulatorLoop
 {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         lastAutosave = CACurrentMediaTime();
         [emuLoopLock lock];
         [[iNDSMFIControllerSupport instance] startMonitoringGamePad];
@@ -532,13 +544,12 @@ const float textureVert[] =
     
     GLubyte *screenBuffer = (GLubyte*)EMU_getVideoBuffer(NULL);
     glBindTexture(GL_TEXTURE_2D, texHandle[0]);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256, texHandle[1] ? 192 : 384, 0, GL_RGBA, GL_UNSIGNED_BYTE, screenBuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256, 192, 0, GL_RGBA, GL_UNSIGNED_BYTE, screenBuffer);
     [glkView[0] display];
-    if (texHandle[1]) {
-        glBindTexture(GL_TEXTURE_2D, texHandle[1]);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256, 192, 0, GL_RGBA, GL_UNSIGNED_BYTE, screenBuffer + 256*192*4);
-        [glkView[1] display];
-    }
+    
+    glBindTexture(GL_TEXTURE_2D, texHandle[1]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256, 192, 0, GL_RGBA, GL_UNSIGNED_BYTE, screenBuffer + 256*192*4);
+    [glkView[1] display];
 }
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
